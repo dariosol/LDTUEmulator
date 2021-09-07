@@ -1,0 +1,1 @@
+g++ -o main main.cpp EBChannel.cpp EBFrames.cpp BaselineSubtraction.cpp iFIFOs.cpp Encoder.cpp oFIFO.cpp --std=c++11 -g -pthread -m64 -I/usr/local/root/include -L/usr/local/root/lib -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lpthread -Wl,-rpath,/opt/root/v6-14-06/lib -lm -ldl -lMinuit
