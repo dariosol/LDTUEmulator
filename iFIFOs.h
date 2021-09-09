@@ -1,7 +1,7 @@
 #ifndef IFIFOS_H
 #define IFIFOS_H
 
-const int FIFOsize=16;
+#define FIFOsize 16
 
 class iFIFOs
 {
@@ -27,6 +27,11 @@ class iFIFOs
   int frefptr;
   int fwindow;
   bool fbaselineflag;
+
+  int fg10;
+  int fg01;
+  int fref10;
+  
 };
  
 #endif

@@ -43,7 +43,7 @@ T oFIFO<T>::Read() {
   output = buffer[head];
 
   // set item at head to be empty
-  T empty;
+  //  T empty;
   buffer[head] = empty_item;
 
   // move head foward
@@ -65,7 +65,13 @@ bool oFIFO<T>::Empty() { return head == tail; }
 template <class T>
 bool oFIFO<T>::Full() { return tail == (head - 1) % max_size; }
 
-
+template <class T>
+void oFIFO<T>::Clear() {
+  while(!Empty()){
+    Read();
+  }
+  cout<<"cleaned"<<endl;
+}
 
 // Return the size of this circular buffer.
 template <class T>

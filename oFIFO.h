@@ -13,6 +13,7 @@ template <class T> class oFIFO {
   bool Full();
   T Front();
   size_t Size();
+  void Clear();
  private:
   std::unique_ptr<T[]> buffer; 
   size_t head = 0;             // size_t is an unsigned long

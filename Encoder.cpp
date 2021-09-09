@@ -19,9 +19,8 @@ bool Encoder::Ready() {
 }
 
 unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
-
-  //  cout<<"ENCODER"<<endl;
-  //cout<<"Data in: "<<data<<" baseflag:" <<baselineflag<<endl;
+  //cout<<"ENCODER"<<endl;
+  //cout<<"Data in: "<<hex<<data<<" baseflag:" <<baselineflag<<endl;
 
   switch (nextstate) {
     /////////////////////////////////////////////////////////
@@ -29,7 +28,7 @@ unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
 
     if(baselineflag==1 && orbit==0) {
       fencodeddata = fencodeddata | ((unsigned int)data<<(6*fbsnsample));
-      //    cout<<"BASELINE"<<endl;
+      //cout<<"BASELINE"<<endl;
       fsignsample=0;
       fready=0;
       fbsnsample++;
@@ -47,7 +46,7 @@ unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
 
     
     else if(baselineflag==0 && orbit ==0 && fbsnsample<5) {      
-      // cout<<"Baseline1 but going into signal: "<<fbsnsample<<endl;
+      //cout<<"Baseline1 but going into signal: "<<dec<<fbsnsample<<endl;
       if(fbsnsample!=0) {
 	foutput = BASELINEMASK1 | ((fbsnsample&0x3f)<<24) | fencodeddata; //close old data
 	fready=1;
@@ -66,7 +65,7 @@ unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
 
     
     else if(baselineflag==0 && orbit ==0 && fbsnsample==5) {
-      // cout<<"BASELINE completed, go into signal"<<fbsnsample<<endl;
+      //cout<<"BASELINE completed, go into signal"<<dec<<fbsnsample<<endl;
       foutput = (BASELINEMASK | fencodeddata); //close old data
       fready=1;
       fnwords++;
@@ -80,7 +79,7 @@ unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
 
     
     else if(orbit ==1) {
-      //  cout<<"BASELINE"<<endl;
+      //cout<<"BASELINE"<<endl;
       foutput = BASELINEMASK1 | (fbsnsample&0xf) | fencodeddata;
       fready=1;
       fnwords++;
@@ -95,14 +94,14 @@ unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
     /////////////////////////////////////////////////////////////////
   case sign: {
     if(baselineflag==0 && orbit ==0) {
-      //  cout<<"SIGNAL to signal"<<endl;
+      //cout<<"SIGNAL to signal"<<endl;
       fencodeddata = (fencodeddata | (data <<(13*(unsigned int)fsignsample)));
       fsignsample++;
       fbsnsample=0;
       fready=0;
       nextstate=sign;
       if(fsignsample==2) {
-	//	cout<<"RESET signsample"<<endl;
+	//cout<<"RESET signsample"<<endl;
 	foutput = SIGNALMASK | fencodeddata;
 	fready=1;
 	fnwords++;
@@ -113,7 +112,7 @@ unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
     }
 
     if(baselineflag==1 && orbit ==0 && fsignsample==1) {
-      //  cout<<"SIGNAL but going to baseline"<<endl;
+      //cout<<"SIGNAL but going to baseline"<<endl;
       foutput = SIGNALMASK1 | SYNCHMASK | fencodeddata;//close data and go to baseline
       fready=1;
       fnwords++;
@@ -125,7 +124,7 @@ unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
     }
 
     if(baselineflag==1 && orbit ==0 && fsignsample==0) {
-      //  cout<<"SIGNAL but going to baseline WITHOUT ANY OUTPUT"<<endl;
+      //cout<<"SIGNAL but going to baseline WITHOUT ANY OUTPUT"<<endl;
       fencodeddata = ((unsigned int)data<<(6*fbsnsample));
       fready=0;
       fbsnsample++;
@@ -136,8 +135,8 @@ unsigned int Encoder::Encode(unsigned int data,bool baselineflag,bool orbit) {
   }
 
   }
-  // cout<<"encodeddata "<<fencodeddata<<endl;
-  //cout<<"output: "<<foutput<<endl;
+  //cout<<"encodeddata "<<hex<<fencodeddata<<endl;
+  //cout<<"output: "<<hex<<foutput<<endl;
   
   return foutput;
 }

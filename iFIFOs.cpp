@@ -9,6 +9,9 @@ iFIFOs::iFIFOs(){
   freadptr=0x6;
   frefptr=freadptr + (0x9-0x1);
   fwindow = 0x0;
+  fg10 = 0;
+  fg01 = 0;
+  fref10 = 0;
   
   for(int i=0; i<FIFOsize; ++i) {
     fFIFO10[i]=0;
@@ -34,10 +37,10 @@ bool iFIFOs::GetBaselineFlag(){
   return fbaselineflag;
 }
 
-int iFIFOs::Read() {
-  int g10=fFIFO10[freadptr];
-  int g01=fFIFO01[freadptr];
-  int ref10=fFIFO10[frefptr];
+int iFIFOs::Read() { 
+  fg10=fFIFO10[freadptr];
+  fg01=fFIFO01[freadptr];
+  fref10=fFIFO10[frefptr];
   
 
   if(frefptr < FIFOsize - 1) frefptr++;
@@ -46,25 +49,25 @@ int iFIFOs::Read() {
   if(freadptr < FIFOsize - 1) freadptr++;
   else(freadptr=0);
   
-  if(ref10 == 0xfff) {
+  if(fref10 == 0xfff) {
     fwindow = 16;
   }
 
   if(fwindow!=0) {
     fwindow--;
     fbaselineflag=0;
-    g01 = g01 | (1 << 12);
-    return g01;
+    fg01 = fg01 | (1 << 12);
+    return fg01;
   }
   else {
-    if(g10 > 63) {
+    if(fg10 > 63) {
       fbaselineflag=0;
     }
     else {
       fbaselineflag=1;
     }
     
-    return g10; 
+    return fg10; 
 
 
   }
