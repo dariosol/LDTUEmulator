@@ -4,7 +4,7 @@
 const int    nbxmax_ = 3564;
 const int    nBXs_ = 100;
 const double tStep_ = 25./4.;
-const int    nSamples_ = 20;
+const int    nSamples_ = 4;//was 20
 
 class EBFrames{
 

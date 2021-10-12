@@ -31,7 +31,8 @@
 using namespace std;
 
 const bool dumpfile=0;
-const unsigned long long Datasize = 2000000; //number of samples: 1 day = 2.x10^13... 1.30h = 8.64e11, 1h = 5.76e11 
+const unsigned long long Datasize = 2000000000; //number of samples: 1 day = 2.x10^13... 1.30h = 8.64e11, 1h = 5.76e11
+//const unsigned long long Datasize = 2000; //number of samples: 1 day = 2.x10^13... 1.30h = 8.64e11, 1h = 5.76e11 
 const int nbx=10;//Number of previous BX considered for the PU
 const int nbx_less1=nbx-1;//Number of previous BX considered for the PU
 
@@ -140,42 +141,52 @@ int main()
   auto t1 = high_resolution_clock::now();
   
   //Every 4 samples I have a bunch crossing
-  for(unsigned long long isample = 0; isample < Datasize; ++isample) {
+  unsigned long long isample=0;
+  for(isample = 0; isample < Datasize; ++isample) {
     if(isample%2000000==0) {
       printf("doing...percentage: %f\n",1.*isample/Datasize);
     }
-    /*    cout<<"***************"<<endl;
+
+    /*
+    cout<<"***************"<<endl;
     cout<<"global sample   : "<<isample<<endl;
     cout<<"bunch crossing  : "<<bxNow<<endl;
     cout<<"PU "<<NPU<<endl;
     cout<<"--"<<endl;
-    cout<<"sample inside bx: "<<is<<endl;*/
+    cout<<"sample inside bx: "<<is<<endl;
+    */
+    
     energy=0;
     tSample = step * is;
     //cout<<"time of the sample inside bx: "<<tSample<<endl;
     is++;
     for(int ibx = 0; ibx < nbx; ++ibx){
-      //cout<<"*"<<endl;
-      //cout<<"PU determination from previous bx "<<ibx<<endl;
+      /*
+      cout<<"*"<<endl;
+      cout<<"PU determination from previous bx "<<ibx<<endl;
+      */
       tS = tSample + (nbx_less1 - ibx) * timestamp + rophase + frame->tSignal(ibx);
-      //cout<<"gobal time of the signal: "<<tS<<endl;
-      //cout<<"Frame energy due to signal: "<<frame->eSignal(ibx)<<endl;
-      //cout<<"time of the signal from frame: "<<frame->tSignal(ibx)<<endl;
+      /*
+      cout<<"gobal time of the signal: "<<tS<<endl;
+      cout<<"Frame energy due to signal: "<<frame->eSignal(ibx)<<endl;
+      cout<<"pulseS Value: "<<pulseS->Value(tS)<<endl;
+      cout<<"time of the signal from frame: "<<frame->tSignal(ibx)<<endl;
+      */
       if(tS>0){
-	energy += frame->eSignal(ibx) * pulseS->Value(tS);
-	//cout<<"energy due to the signal: "<<frame->eSignal(ibx) * pulseS->Value(tS)<<endl;
+	  energy += frame->eSignal(ibx) * pulseS->Value(tS);	  
       }
+      //cout<<"Integral energy due to the signal: "<<energy<<endl;
+      
       tA = tSample + (nbx_less1 - ibx) * timestamp + rophase + frame->tAPD(ibx);
-      //cout<<"gobal time of the apd: "<<tA<<endl;
-      //cout<<"Frame energy due to apd: "<<frame->tAPD(ibx)<<endl;
-      //cout<<"time of the apd from frame: "<<frame->tAPD(ibx)<<endl;
+
       if(tA>0){
 	energy += frame->eAPD(ibx) * pulseA->Value(tA);
-	//	cout<<"energy due to the apd: "<<frame->eAPD(ibx) * pulseA->Value(tA)<<endl;
+
       }
     }
-    //    if(isample>1000 && isample<1020) energy*=600;
-    //cout<<"global energy: "<<energy<<endl;
+    //    if(isample>1000 && isample<1002) energy*=2000;
+    //    if(isample>1030 && isample<1070) energy*=500;
+    //cout<<"global energy inserted in the frame: "<<energy<<endl;
     frame->pushSample(energy);
     //cout<<"isample "<<dec<<isample<<" PU "<<NPU<<" energy "<<energy<<endl;
     hEnergy->Fill(energy);
@@ -243,6 +254,11 @@ int main()
 	  NPU = random1->Poisson(npu);
 	}
 	ch->GenerateBX(NPU);
+//	if(bxNow==250) {
+//	  cout<<"BIASSSSS"<<endl;
+//	  frame->pushBX(ch->energySignal()*10e2, 0., ch->energySpike(), ch->timeSpike());
+//	}//bias
+//	else
 	frame->pushBX(ch->energySignal(), 0., ch->energySpike(), ch->timeSpike());
       }
     }//end BX
